@@ -37,10 +37,9 @@ char *nascimento(char *s);
 char *corDosOlhos(char *s);
 char *genero(char *s);
 char *homeworld(char *s);
-void limparEspacoDaCadeia(char *s);
 
 Personagem personagemA[TAM];
-int n;
+int n = 0;
 
 //INICIO FUNCOES DE LISTA
 void start() {
@@ -55,7 +54,7 @@ bool PesquisaBinaria (char *chave) {
 
   bool achou = false;
 
- while (inf <= sup)
+ while (inf <= sup && achou == false)
  {
       meio = (inf + sup)/2;
       if (strcmp(chave, personagemA[meio].nome) == 0) {
@@ -65,15 +64,12 @@ bool PesquisaBinaria (char *chave) {
       else if (strcmp(chave, personagemA[meio].nome) < 0) {
          sup = meio-1;
       }
-      else {
-
+      else if (strcmp(chave, personagemA[meio].nome) > 0) {
            inf = meio+1;
       }
  }
   return achou;   /* não encontrado */
 }
-
-
 
 void inserirInicio(Personagem personagem) {
       if (n >= TAM) {
@@ -169,20 +165,23 @@ char *acharNome(char *s) {
       int j = 0;
       int p = 0;
       char aspas = '\'';
-      int cont = 0;
 
       for (int i = 0; i < strlen(s); i++) {
-
             if (s[i] == 'n' && s[i+1] == 'a' && s[i+2] == 'm' && s[i+3] == 'e') {
                   j = i+8;
-                  while (s[j] != '\'') {
-                        nome[p] = s[j];
-                        p++;
-                        j++;
-                        cont++;
+
+                  for(int k = j; k < strlen(s); k++) {
+                        if(s[k] == aspas) {
+                              nome[p] = '\0';
+                              k = strlen(s);
+                        } else {
+                              nome[p] = s[k];
+                              p++;
+                        }
                   }
             }
       }
+
       return nome;
 
 }
@@ -347,12 +346,16 @@ int main() {
       int quantidadeEntrada2 = 0; //armazenar valor do inteiro
       char pubin[SZ][SZ];
       
-
       //ler até aparecer fim na entrada padrão
       do {
             scanf(" %[^\n]", entrada[quantidadeEntrada]);
       } while(isFim(entrada[quantidadeEntrada++]) == false);
       quantidadeEntrada--;
+
+       do {
+            scanf(" %[^\n]", pubin[quantidadeEntrada2]);
+      } while(isFim(pubin[quantidadeEntrada2++]) == false);
+      quantidadeEntrada2--;
 
       Personagem personagemEntradaPadrao[TAM]; //Array para armazenar os personagens da entrada padrão      
       //Armazenar personagens do pub in na lista
@@ -372,15 +375,13 @@ int main() {
       }
 
 
-      do {
-            scanf(" %[^\n]", pubin[quantidadeEntrada2]);
-      } while(isFim(entrada[quantidadeEntrada2++]) == false);
-
+     
       for(int i = 0; i < quantidadeEntrada2; i++) {
           if(PesquisaBinaria(pubin[i]) == true) {
-              printf("SIM\n");
+                  printf("SIM\n");
+
           } else {
-            printf("NAO\n");
+                  printf("NAO\n");
           }
       }
 

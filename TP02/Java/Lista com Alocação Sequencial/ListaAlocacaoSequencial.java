@@ -1,5 +1,7 @@
 import java.text.*;
 import java.io.*;
+
+	public String lerArquivo(String arquivo) {
 import java.util.*;
 /*
 * Classe Personagem TP02 Q01 - Java
@@ -128,6 +130,8 @@ class Personagem{
 		return clone;
 	}
 	//ler dados do arquivo
+import java.io.*;
+
 	public String lerArquivo(String arquivo) {
 		String linha = new String();
 		try {

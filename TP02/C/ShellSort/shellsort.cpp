@@ -1,15 +1,9 @@
-/*
-* Autor: Paulo Rievrs Oliveira
-* Struct V-1.0
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
 
-
-#define TAM 6
+#define TAM 1000
 
 #define SZ 1000
 
@@ -28,7 +22,7 @@ typedef struct Personagem {
 
 } Personagem;
 
-//PROTITIPOS
+void setPersonagem(Personagem personagem, char *arquivo);
 char *acharNome(char *s);
 int altura(char *s);
 double massa(char *s);
@@ -38,49 +32,46 @@ char *nascimento(char *s);
 char *corDosOlhos(char *s);
 char *genero(char *s);
 char *homeworld(char *s);
-int calcularMedia();
-//Fim prototipos
 
-
-//variaveis globais
 Personagem personagemA[TAM];
-int primeiro = 0;
-int ultimo = 0;
-int media = 0;
-//fim variaveis globais
+int n = 0;
 
+//SHELL
 
-Personagem remover() {
-
-   //validar remocao
-   if (primeiro == ultimo) {
-      printf("Erro ao remover!");
-      exit(1);
+void insercaoPorCor(int cor, int h){
+   for (int i = (h + cor); i < n; i+=h) {
+      Personagem tmp = personagemA[i];
+      int j = i - h;
+      while ((j >= 0) && ((personagemA[j].peso > tmp.peso) || (j >= 0 && personagemA[j].peso == tmp.peso && strcmp(personagemA[j].nome, tmp.nome) > 0))){     
+         personagemA[j + h] = personagemA[j];
+         j-=h;    
+      }
+      personagemA[j + h] = tmp;
    }
-
-
-   Personagem resp = personagemA[primeiro];
-   media--;
-   primeiro = (primeiro + 1) % TAM;
-
-   return resp;
 }
 
-void inserir(Personagem personagem) {
+void shellsort() {
+   int h = 1;
 
+   do { h = (h * 3) + 1; } while (h < n);
 
-    if (((ultimo + 1) % TAM) == primeiro) {
-           Personagem r = remover();
-    }
-
-   personagemA[ultimo] = personagem;
-   ultimo = (ultimo + 1) % TAM;
-   media++;
-   printf("%d\n", calcularMedia());
-
+   do {
+      h /= 3;
+      for(int cor = 0; cor < h; cor++){
+         insercaoPorCor(cor, h);
+      }
+   } while (h != 1);
 }
 
 
+void inserirFim(Personagem personagem) {
+      if (n >= TAM) {
+            printf("Erro ao inserirFim com");
+            exit(1);
+      }
+      personagemA[n] = personagem;
+      n++;
+}
 
 char *lerArquivo(char *nome) {
       FILE *arq;
@@ -268,75 +259,9 @@ char *homeworld(char *s) {
       return homeworld;
 }
 
+
 void printPersonagem(Personagem personagem) {
-      printf("## %s ## %d ## %g ## %s ## %s ## %s ## %s ## %s ## %s ## \n", personagem.nome, personagem.altura, personagem.peso, personagem.corDoCabelo, personagem.corDaPele, personagem.corDosOlhos, personagem.anoNascimento, personagem.genero, personagem.homeworld);
-}
-
-//--=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=
-
-char getComando(char *pubin) {
-      return pubin[0];
-}
-
-char *getArquivo(char *pubin) {
-      int posicao = 0;
-      char *arquivo = (char*) malloc (sizeof(char) * 1000);
-      for(int i = 2; i < strlen(pubin); i++) {
-            arquivo[posicao] = pubin[i];
-            posicao++;
-      }
-
-      return arquivo;
-}
-
-int arredonda(double number) {
-    return (number >= 0) ? (int)(number + 0.5) : (int)(number - 0.5);
-}
-
-int calcularMedia() {
-
-      double soma = 0;
-      int arredondado = 0;
-
-      for(int i = primeiro; i != ultimo; i = (i+1) % TAM) {
-            soma += personagemA[i].altura;
-      }
-
-      arredondado = arredonda(soma/media);
-
-      
-      return arredondado;
-}
-
-void comandoI(char *pubin, Personagem personagem) {
-      char *arquivo = getArquivo(pubin);
-      arquivo = getArquivo(pubin);
-      arquivo = lerArquivo(arquivo);
-      personagem.nome = acharNome(arquivo);
-      personagem.altura = altura(arquivo);
-      personagem.peso = 0;
-      personagem.corDoCabelo = corDoCabelo(arquivo);
-      personagem.corDaPele = corDaPele(arquivo);
-      personagem.anoNascimento = nascimento(arquivo);
-      personagem.corDosOlhos = corDosOlhos(arquivo);
-      personagem.genero = genero(arquivo);
-      personagem.homeworld = homeworld(arquivo);
-      inserir(personagem);
-}
-
-
-void comandoR() {
-      Personagem r = remover();
-      printf("(R) %s\n", r.nome);
-
-}
-
-void fazerComando(char *pubin, Personagem personagem) {
-      char comando = getComando(pubin);
-      if(comando == 'I')
-            comandoI(pubin, personagem);
-      if(comando == 'R')
-            comandoR();
+      printf("\n ## %s ## %d ## %g ## %s ## %s ## %s ## %s ## %s ## %s ## \n", personagem.nome, personagem.altura, personagem.peso, personagem.corDoCabelo, personagem.corDaPele, personagem.corDosOlhos, personagem.anoNascimento, personagem.genero, personagem.homeworld);
 }
 
 int main() {
@@ -344,16 +269,12 @@ int main() {
       char entrada[SZ][SZ]; //Array de string (matriz de char)
       int quantidadeEntrada = 0;
       char *arquivo; //armazenar nome do arquivo
-      int valor = 0; //armazenar valor do inteiro
-      char pubin[SZ][SZ];
       
-
       //ler até aparecer fim na entrada padrão
       do {
             scanf(" %[^\n]", entrada[quantidadeEntrada]);
       } while(isFim(entrada[quantidadeEntrada++]) == false);
       quantidadeEntrada--;
-      scanf("%d", &valor); //ler um inteiro após o fim (sempre vai ter)
 
       Personagem personagemEntradaPadrao[TAM]; //Array para armazenar os personagens da entrada padrão      
       //Armazenar personagens do pub in na lista
@@ -362,22 +283,19 @@ int main() {
             arquivo = lerArquivo(entrada[i]); 
             personagemEntradaPadrao[i].nome = acharNome(arquivo);
             personagemEntradaPadrao[i].altura = altura(arquivo);
-            personagemEntradaPadrao[i].peso = 0;
+            personagemEntradaPadrao[i].peso = massa(arquivo);
             personagemEntradaPadrao[i].corDoCabelo = corDoCabelo(arquivo);
             personagemEntradaPadrao[i].corDaPele = corDaPele(arquivo);
             personagemEntradaPadrao[i].anoNascimento = nascimento(arquivo);
             personagemEntradaPadrao[i].corDosOlhos = corDosOlhos(arquivo);
             personagemEntradaPadrao[i].genero = genero(arquivo);
             personagemEntradaPadrao[i].homeworld = homeworld(arquivo);
-            inserir(personagemEntradaPadrao[i]);
-
+            inserirFim(personagemEntradaPadrao[i]);
       }
 
-      //For para fazer os comandos da lista
-      Personagem personagens[TAM];
-      for(int i = 0; i < valor; i++) {
-            scanf(" %[^\n]", pubin[i]);
-            fazerComando(pubin[i], personagens[i]);
+      shellsort();
+
+      for(int i = 0; i < quantidadeEntrada; i++) {
+            printPersonagem(personagemA[i]);
       }
 }
-
