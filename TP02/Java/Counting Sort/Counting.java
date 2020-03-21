@@ -465,8 +465,9 @@ class Countingsort extends MetodosLista {
            if(maior.getPeso() < personagemA[i].getPeso()) {
               maior = personagemA[i].clone();
            }
-          }
-         return maior;	
+		  }
+		  int x = (int)maior.getPeso() * 10;
+         return x;	
       }
   
   
@@ -474,44 +475,44 @@ class Countingsort extends MetodosLista {
        * Algoritmo de ordenacao Countingsort.
        */
       public void countingsort() {
-        //Array para contar o numero de ocorrencias de cada elemento
-        Personagem[] count = new Personagem[getMaior() + 1];
+		//Array para contar o numero de ocorrencias de cada elemento
+        int[] count = new int[getMaior() + 1];
         Personagem[] ordenado = new Personagem[n];
   
         //Inicializar cada posicao do array de contagem 
         for (int i = 0; i < count.length; i++) {
-            count[i].setPeso(0);
+            count[i] = 0;
         }
   
         //Agora, o count[i] contem o numero de elemento iguais a i
         for (int i = 0; i < n; i++) {
-            count[personagemA[i].getPeso()]++;
+            count[(int)(personagemA[i].getPeso() * 10)]++;
         }
         
         //Agora, o count[i] contem o numero de elemento menores ou iguais a i
         for(int i = 1; i < count.length; i++) {
-            Double peso = count[i].getPeso();
-            count[i].setPeso(peso += count[i - 1].getPeso());
+            count[i] += count[i - 1];
         }
   
         //Ordenando
         for(int i = n - 1; i >= 0; i--) {
             
-
-            ordenado[count[personagemA[i].getPeso()] - 1] = personagemA[i].clone();
-            count[personagemA[i].getṔeso()]--;
+			ordenado[count[(int)(personagemA[i].getPeso() * 10)] - 1] = personagemA[i].clone();
+			
+            count[(int)(personagemA[i].getPeso() * 10)]--;
         }
   
         //Copiando para o array original
         for(int i = 0; i < n; i++) {
             personagemA[i] = ordenado[i].clone();
         }
+	}
 }
 
 public class Counting {
 	static Countingsort lista = new Countingsort(1000);
 
-	public boolean isFim(String frase) {
+	public static boolean isFim(String frase) {
 		boolean isFim = true;
 		if (frase.length() == 3) {
 				if (frase.charAt(0) == 'F' && frase.charAt(1) == 'I' && frase.charAt(2) == 'M') {
@@ -521,7 +522,7 @@ public class Counting {
 		return isFim;
 	}
 
-	public void setPersonagem(String strArquivo, Personagem personagem) throws Exception{
+	public static void setPersonagem(String strArquivo, Personagem personagem) throws Exception{
             personagem.acharNome(strArquivo);
             personagem.altura(strArquivo);
             personagem.peso(strArquivo);
@@ -533,7 +534,7 @@ public class Counting {
             personagem.homeworld(strArquivo);
      }
 
-     public void escreverNoArquivo(String conteudo) throws Exception{
+     public static void escreverNoArquivo(String conteudo) throws Exception{
 		try {
 			File diretorio = new File("655985_countingsort.txt");
 			FileWriter arq = new FileWriter("655985_countingsort.txt");
@@ -546,7 +547,7 @@ public class Counting {
 
 	}
 
-	public void main(String args[]) throws Exception{
+	public static void main(String args[]) throws Exception{
 		long time1 = System.currentTimeMillis();
 
 		String[] entrada = new String[1000];
@@ -574,7 +575,7 @@ public class Counting {
 			lista.inserirFim(personagem[i]);
 		}
 
-		lista.Counting();
+		lista.countingsort();
 
 		Personagem print[] = lista.getPersonagemA();
 		for(int i = 0; i < lista.getN(); i++) {
