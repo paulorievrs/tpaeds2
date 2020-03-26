@@ -28,12 +28,8 @@ public class Cesar {
             
         }
 
-
         return alterado;
-
     } //fim cifra()
-
-
 
     public static void main(String[] args) {
 
