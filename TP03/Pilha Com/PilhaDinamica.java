@@ -400,7 +400,7 @@ class MetodosPilha {
 	}
 }
 
-public class PilhaS {
+public class PilhaDinamica {
 
 	static MetodosPilha pilha = new MetodosPilha(); //global para pilha
 
