@@ -334,48 +334,75 @@ class Personagem{
 	
 }
 
+class Celula extends Personagem {
+	public Personagem elemento; // Elemento inserido na celula.
+	public Celula prox; // Aponta a celula prox.
+	
+	public Celula() { 
+        this(new Personagem()); 
+    }
 
-class MetodosPilha {
-	private Personagem[] personagemA;
-    private int n;
-
-    public MetodosPilha() {
-		this(1000);
-	}
-
-	public MetodosPilha(int tam) {
-		personagemA = new Personagem[tam];
-		n = 0;
-	}
-	public void setN(int n) {
-		this.n = n;
-	}
-	public int getN() {
-		return this.n;
-	}
-	public void setPersonagensA(int posicao, Personagem[] personagemA) {
-		this.personagemA = personagemA.clone();
-	}
-	public Personagem[] getPersonagemA() {
-		return this.personagemA;
-	}
-
-	public void Inserir(Personagem personagem) {
-		n++;
-		personagemA[n - 1] = personagem.clone();
-	}
-	public Personagem remover() {
-		return personagemA[--n];
+	public Celula(Personagem elemento) {
+      this.elemento = elemento;
+      this.prox = null;
 	}
 }
 
+class MetodosPilha {
+	private Celula topo;
+	private int n;
 
-public class Pilha {
+	public MetodosPilha() {
+		topo = null;
+	}
 
-	static MetodosPilha pilha = new MetodosPilha(1000); //global para pilha
+	public int getN() {
+		return n;
+	}
 
+	public Celula getTopo() {
+		return topo;
+	}
 
+	public void inserir(Personagem x) {
+		Celula tmp = new Celula(x);
+		tmp.prox = topo;
+		topo = tmp;
+		tmp = null;
+		n++;
+	}
 
+	public Personagem remover() throws Exception {
+		if (topo == null) {
+			throw new Exception("Erro ao remover!");
+		}
+
+		Personagem resp = topo.elemento.clone();
+		Celula tmp = topo;
+		topo = topo.prox;
+		tmp.prox = null;
+		tmp = null;
+		n--;
+		return resp;
+	}
+	
+    public void mostrar(Celula i, int cont) throws Exception {
+		if(i != null) {
+			mostrar(i.prox, cont - 1);
+			DecimalFormat df = new DecimalFormat("#.#", new DecimalFormatSymbols(Locale.US));
+		    
+			String print = ("["+cont+"] "+" ## "+i.elemento.getNome()+" ## "+df.format(i.elemento.getAltura())+" ## "+df.format(i.elemento.getPeso())+" ## "+i.elemento.getCorDoCabelo()+" ## "+i.elemento.getCorDaPele()+
+			" ## "+i.elemento.getCorDosOlhos()+" ## "+i.elemento.getAnoNascimento()+" ## "+i.elemento.getGenero()+ " ## "+i.elemento.getHomeworld()+" ## ");
+			String convertida = new String(print.getBytes(), "ISO-8859-1");
+			MyIO.println(convertida);
+			
+		}
+	}
+}
+
+public class PilhaS {
+
+	static MetodosPilha pilha = new MetodosPilha(); //global para pilha
 
 public static boolean isFim(String frase) {
 	boolean isFim = true;
@@ -415,7 +442,8 @@ public static boolean isFim(String frase) {
 					arquivo = getArquivos(pubin[i]);
                     arquivo = personagem[i].lerArquivo(arquivo);
                     setPersonagem(arquivo, personagem[i]);
-                    pilha.Inserir(personagem[i]);
+                    pilha.inserir(personagem[i]);
+					
 				break;
 				case "R":
 					p = pilha.remover();
@@ -467,19 +495,17 @@ public static boolean isFim(String frase) {
         Personagem[] personagem = new Personagem[quantidadeEntrada];
         for(int i = 0; i < quantidadeEntrada; i++) {
               arquivo[i] = new Personagem();
-			  String convertida = new String(entrada[i].getBytes("UTF-8"), "ISO-8859-1");
+			  String convertida = new String(entrada[i].getBytes("ISO-8859-1"), "UTF-8");
               strArquivo = arquivo[i].lerArquivo(convertida);
               personagem[i] = new Personagem();
 			  setPersonagem(strArquivo, personagem[i]);
-			  pilha.Inserir(personagem[i]);
+			  pilha.inserir(personagem[i]);
 			  
         }
 
         fazerComandos(pubin, quantidadeDeComandos);
-		Personagem paraPrintar[] = pilha.getPersonagemA();
-		for(int i = 0; i < pilha.getN(); i++) {
-			paraPrintar[i].print(i);
-		}
+		Celula i = new Celula();
+		pilha.mostrar(pilha.getTopo(), pilha.getN());
 
 	}
 }

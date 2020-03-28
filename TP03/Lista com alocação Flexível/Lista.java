@@ -128,6 +128,8 @@ class Personagem{
 		return clone;
 	}
 	//ler dados do arquivo
+import java.io.*;
+
 	public String lerArquivo(String arquivo) {
 		String linha = new String();
 		try {
@@ -335,18 +337,19 @@ class Personagem{
 }
 
 
-class MetodosPilha {
-	private Personagem[] personagemA;
-    private int n;
+class MetodosLista {
+      private Personagem[] personagemA;
+      private int n;
 
-    public MetodosPilha() {
+      public MetodosLista() {
 		this(1000);
 	}
 
-	public MetodosPilha(int tam) {
+	public MetodosLista(int tam) {
 		personagemA = new Personagem[tam];
 		n = 0;
 	}
+
 	public void setN(int n) {
 		this.n = n;
 	}
@@ -360,74 +363,115 @@ class MetodosPilha {
 		return this.personagemA;
 	}
 
-	public void Inserir(Personagem personagem) {
-		n++;
-		personagemA[n - 1] = personagem.clone();
+	
+
+      public void inserirInicio(Personagem personagem) throws Exception {
+            if (n >= personagemA.length) {
+                  throw new Exception("Erro ao inserirInicio coom:" + personagem);
+            }
+
+            for(int i = n; i > 0; i--) {
+                  personagemA[i] = personagemA[i-1].clone();
+            }
+            personagemA[0] = personagem.clone();
+            n++;
+      }
+
+      public void inserir(Personagem personagem, int posicao) throws Exception{
+            if (n >= personagemA.length ||posicao < 0 || posicao > n) {
+                  throw new Exception("Erro ao inserir com:" + personagem);
+            }
+            for(int i = n; i > posicao; i--) {
+                  personagemA[i] = personagemA[i - 1].clone();
+            }
+            personagemA[posicao] = personagem.clone();
+            n++;
+      }
+
+      public void inserirFim(Personagem personagem) throws Exception {
+            if (n >= personagemA.length) {
+                  throw new Exception("Erro ao inserirFim com: " + personagem);
+            }
+            personagemA[n] = personagem.clone();
+            n++;
+      }
+      
+      public Personagem removerInicio()throws Exception {
+            if (n == 0) {
+                  throw new Exception("Erro ao removerInicio ");
+            }
+            Personagem personagemRetorno = personagemA[0].clone();
+            n--;
+            for(int i = 0; i < n; i++) {
+                  personagemA[i] = personagemA[i+1].clone();
+            }
+
+            return personagemRetorno;
+
+      }
+
+      public Personagem remover(int posicao) throws Exception{
+            if (n == 0 || posicao < 0 || posicao >= n) {
+
+                  throw new Exception("Erro ao remover, n = " + n + " posicao = " + posicao);
+		}
+		n--;
+		
+            Personagem personagemRetorno = personagemA[posicao].clone();
+            for (int i = posicao; i < n; i++) {
+                  personagemA[i] = personagemA[i + 1].clone();
+            }
+            return personagemRetorno;
+      }
+
+      public Personagem removerFim() throws Exception {
+            if (n == 0) {
+                  throw new Exception("Erro removerFim");
+            }
+            return personagemA[--n];
 	}
-	public Personagem remover() {
-		return personagemA[--n];
-	}
+	
+	
 }
 
 
-public class Pilha {
-
-	static MetodosPilha pilha = new MetodosPilha(1000); //global para pilha
-
+public class Lista {
+	static MetodosLista lista = new MetodosLista(1000);
 
 
-
-public static boolean isFim(String frase) {
-	boolean isFim = true;
-	if (frase.length() == 3) {
-			if (frase.charAt(0) == 'F' && frase.charAt(1) == 'I' && frase.charAt(2) == 'M') {
-			isFim = false;
+      public static boolean isFim(String frase) {
+		boolean isFim = true;
+		if (frase.length() == 3) {
+				if (frase.charAt(0) == 'F' && frase.charAt(1) == 'I' && frase.charAt(2) == 'M') {
+				isFim = false;
+				}
 			}
-		}
-	return isFim;
+		return isFim;
 	}
+      
 
-	public static String getArquivos(String s) {
-		String[] arquivo = s.split(" ");
-		return arquivo[1];
-	}
-
-	public static String getComandos(String s) {
+      public static String getComandos(String s) {
             String[] comandos = s.split(" ");
             return comandos[0];
       }
+      public static String getArquivos(String s){
+            String[] arquivos = s.split(" ");
+            String retorno = new String();
+            if(arquivos.length == 2) {
+                  retorno = arquivos[1];
+            } else {
+                  retorno = arquivos[2];
+            }
+            return retorno;
+      }
 
-	public static void fazerComandos(String[] pubin, int valor) throws Exception {
-		String comando = new String();
-		String arquivo = new String();
-		Personagem[] personagem = new Personagem[valor];
-		int posicao = 0;
-		Personagem p = new Personagem();
+      public static int getPosicao(String s) {
+            String[] posicao = s.split(" ");
+            return Integer.parseInt(posicao[1]);
+      
+      }
 
-		for(int i = 0; i < valor; i++) {
-			comando = getComandos(pubin[i]);
-			personagem[i] = new Personagem();
-
-
-			switch (comando) {
-				case "I": 
-					pubin[i] = new String(pubin[i].getBytes("ISO-8859-1"), "UTF-8");
-					arquivo = getArquivos(pubin[i]);
-                    arquivo = personagem[i].lerArquivo(arquivo);
-                    setPersonagem(arquivo, personagem[i]);
-                    pilha.Inserir(personagem[i]);
-				break;
-				case "R":
-					p = pilha.remover();
-					MyIO.println("(R) " + p.getNome());
-			}	
-
-
-		}
-
-	}
-
-	public static Personagem setPersonagem(String strArquivo, Personagem personagem) throws Exception{
+      public static Personagem setPersonagem(String strArquivo, Personagem personagem) throws Exception{
             personagem.acharNome(strArquivo);
             personagem.altura(strArquivo);
             personagem.setPeso(0);
@@ -437,49 +481,102 @@ public static boolean isFim(String frase) {
             personagem.nascimento(strArquivo);
             personagem.genero(strArquivo);
             personagem.homeworld(strArquivo);
+            aux.inserirInicio(personagem);
             return personagem;
-    }
-	public static void main(String args[]) throws Exception {
+      }
+      
+      public static Personagem[] lista(String[] pubin, int n) throws Exception {
+        String comando = new String();
+		String arquivo = new String();
+		Personagem personagens[] = new Personagem[n];
+		int posicao = 0;
+		Personagem p = new Personagem();
+            for(int i = 0; i < n; i++) {
+			comando = getComandos(pubin[i]);
+			personagens[i] = new Personagem();
+                  switch (comando) {
+                        case "II":
+                              pubin[i] = new String(pubin[i].getBytes("ISO-8859-1"), "UTF-8");
+                              arquivo = getArquivos(pubin[i]);
+                              arquivo = personagens[i].lerArquivo(arquivo);
+                              setPersonagem(arquivo, personagens[i]);
+                              lista.inserirInicio(personagens[i]);
+                        break;
+                        case "IF": 
+                              pubin[i] = new String(pubin[i].getBytes("ISO-8859-1"), "UTF-8");
+                              arquivo = getArquivos(pubin[i]);
+                              arquivo = personagens[i].lerArquivo(arquivo);
+                              setPersonagem(arquivo, personagens[i]);
+                              lista.inserirFim(personagens[i]);
+                        break;
+                        case "R*":
+                          	posicao = getPosicao(pubin[i]);
+							p = lista.remover(posicao);
+							MyIO.println("(R) " + p.getNome());
+                        break;
+                        case "RI":
+							p = lista.removerInicio();
+							MyIO.println("(R) " + p.getNome());
+                        break;
+		                case "RF":
+							p = lista.removerFim();
+							MyIO.println("(R) " + p.getNome());
+                        break;
+                        case "I*":
+                              pubin[i] = new String(pubin[i].getBytes("ISO-8859-1"), "UTF-8");
+                              arquivo = getArquivos(pubin[i]);
+                              arquivo = personagens[i].lerArquivo(arquivo);
+                              posicao = getPosicao(pubin[i]);
+                              setPersonagem(arquivo, personagens[i]);
+                              lista.inserir(personagens[i], posicao);
+                        break;
+                        default:
+                              MyIO.println("faltou o comando: " + getComandos(pubin[i]));
+                  }
 
-		MyIO.setCharset("ISO-8859-1");
-		String[] entrada = new String[1000]; //receber pubin
-		int quantidadeEntrada = 0; //contador da quantidade de entrada
-		String strArquivo = ""; //ler nome do arquivo
-        String[] pubin = new String[1000];
+            }
+
+            return personagens;
+      }
+
+
+      public static void main(String args[]) throws Exception {
+            MyIO.setCharset("ISO-8859-1");
+			String[] entrada = new String[1000];
+			int quantidadeEntrada = 0;
+			String strArquivo = "";
+            String[] pubin = new String[1000];
 
             //inicio leitura de dados
 		do {
 
 			entrada[quantidadeEntrada] = MyIO.readLine();
-
 		} while (isFim(entrada[quantidadeEntrada++]) == true);
-
-        int quantidadeDeComandos = MyIO.readInt();  //ler valor inteiro após "FIM"      
-
-		quantidadeEntrada--; //retirar o fim do array das entradas
-
-        for (int i = 0; i < quantidadeDeComandos; i++) {
-              pubin[i] = MyIO.readLine(); //ler dados após o número inteiro do pubin
-        }
-
+            int n = MyIO.readInt();                  
+			quantidadeEntrada--;
+            for (int i = 0; i < n; i++) {
+                  pubin[i] = MyIO.readLine();
+            }
 		//fim leitura de dados
-        Personagem[] arquivo = new Personagem[quantidadeEntrada];
-        Personagem[] personagem = new Personagem[quantidadeEntrada];
-        for(int i = 0; i < quantidadeEntrada; i++) {
-              arquivo[i] = new Personagem();
-			  String convertida = new String(entrada[i].getBytes("UTF-8"), "ISO-8859-1");
-              strArquivo = arquivo[i].lerArquivo(convertida);
-              personagem[i] = new Personagem();
-			  setPersonagem(strArquivo, personagem[i]);
-			  pilha.Inserir(personagem[i]);
-			  
-        }
 
-        fazerComandos(pubin, quantidadeDeComandos);
-		Personagem paraPrintar[] = pilha.getPersonagemA();
-		for(int i = 0; i < pilha.getN(); i++) {
-			paraPrintar[i].print(i);
+            Personagem[] arquivo = new Personagem[quantidadeEntrada];
+            Personagem[] personagem = new Personagem[quantidadeEntrada];
+            for(int i = 0; i < quantidadeEntrada; i++) {
+                  arquivo[i] = new Personagem();
+				  String convertida = new String(entrada[i].getBytes("ISO-8859-1"), "UTF-8");
+                  strArquivo = arquivo[i].lerArquivo(convertida);
+                  personagem[i] = new Personagem();
+				  setPersonagem(strArquivo, personagem[i]);
+				  lista.inserirFim(personagem[i]);
+            }
+		
+		lista(pubin, n);
+		Personagem print[] = lista.getPersonagemA();
+		for(int i = 0; i < lista.getN(); i++) {
+			print[i].print(i);
 		}
+		
+		
 
-	}
+      }
 }
