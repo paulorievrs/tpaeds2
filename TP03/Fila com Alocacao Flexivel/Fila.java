@@ -348,95 +348,123 @@ class Celula extends Personagem {
 	}
 }
 
-class MetodosPilha {
-	private Celula topo;
-	private int n;
+class MetodosFila {
+	private Celula primeiro;
+	private Celula ultimo;
+    private int tamanho;
 
-	public MetodosPilha() {
-		topo = null;
+
+	/**
+	 * Construtor da classe que cria uma fila sem elementos (somente no cabeca).
+	 */
+	public MetodosFila() {
+		primeiro = new Celula();
+		ultimo = primeiro;
+        tamanho = 0;
 	}
 
-	public int getN() {
-		return n;
+
+	/**
+	 * Insere elemento na fila (politica FIFO).
+	 * @param x int elemento a inserir.
+	 */
+	public void inserir(Personagem x) throws Exception{
+        if(tamanho == 5) {
+            remover();
+        }
+		ultimo.prox = new Celula(x);
+		ultimo = ultimo.prox;
+		ultimo.prox = primeiro;
+        tamanho++;
+        calcularMedia(tamanho);
 	}
 
-	public Celula getTopo() {
-		return topo;
-	}
-
-	public void inserir(Personagem x) {
-		Celula tmp = new Celula(x);
-		tmp.prox = topo;
-		topo = tmp;
-		tmp = null;
-		n++;
-	}
-
-	public void extrairdapilha(int i) {
+	public int extrairdafila(int i) throws Exception {
+		int resp = 0;
 		Celula aux;
-	
-		if(topo == null || primeiro.prox == null) {
-        	return;
-    	}
-
-		for(Celula j = topo; j != null; j = j.prox) {
+		Celula j;
+		for(j = primeiro.prox; j != null; j = j.prox) {
 			if(j.elemento == i) {
+				resp = j.elemento;
 				aux = j;
-				j == null;		
+				j = null;
+			} else {
+				throw new Exception("Nao achou esse numero");
 			}
 		}
 
-		if(aux.prox != null) {
+	
+		if (aux != ultimo || aux.prox != null) {
+			Celula k;
+			for(k = primeiro.prox; k != aux; k = k.prox);
+			for(k = k.prox; k != null; aux = k, k = k.prox, aux = aux.prox);
+			aux = null;
+			k = null;
 
-			for(Celula k = aux.prox; k != null; k = k.prox, aux.prox = k; aux = aux.prox);
+		} else {
 
+			aux = null;
 		}
-
-		//Melhor caso: (1) para reorganizar porque o elemento está no final e (n) para achar.
-		//Melhor pior: (n) para reorganizar porque o elemento está no topo e (1) para achar.
-
+		
+		//Pior caso seria (1) pois estaria no primeiro.prox e o primeiro for ja encerraria. Porém há um custo de (n) para reorganizar
+		//levando todo os elementos "pra cima"
+		//O pior caso seria (1) pois estaria na ultima posição e assim não teria que reorganizar
 	}
-
+	/**
+	 * Remove elemento da fila (politica FIFO).
+	 * @return Elemento removido.
+	 * @trhows Exception Se a fila nao tiver elementos.
+	 */
 	public Personagem remover() throws Exception {
-		if (topo == null) {
+		if (primeiro == ultimo) {
 			throw new Exception("Erro ao remover!");
 		}
 
-		Personagem resp = topo.elemento.clone();
-		Celula tmp = topo;
-		topo = topo.prox;
-		tmp.prox = null;
-		tmp = null;
-		n--;
-		return resp;
+        Celula tmp = primeiro;
+        primeiro = primeiro.prox;
+        Personagem resp = primeiro.elemento;
+        tmp.prox = null;
+        tmp = null;
+        tamanho--;
+	    return resp;
 	}
-	
-    public void mostrar(Celula i, int cont) throws Exception {
-		if(i != null) {
-			mostrar(i.prox, cont - 1);
-			DecimalFormat df = new DecimalFormat("#.#", new DecimalFormatSymbols(Locale.US));
-		    
-			String print = ("["+cont+"] "+" ## "+i.elemento.getNome()+" ## "+df.format(i.elemento.getAltura())+" ## "+df.format(i.elemento.getPeso())+" ## "+i.elemento.getCorDoCabelo()+" ## "+i.elemento.getCorDaPele()+
-			" ## "+i.elemento.getCorDosOlhos()+" ## "+i.elemento.getAnoNascimento()+" ## "+i.elemento.getGenero()+ " ## "+i.elemento.getHomeworld()+" ## ");
-			String convertida = new String(print.getBytes(), "ISO-8859-1");
-			MyIO.println(convertida);
-			
+
+
+    public void calcularMedia(int tamanho) {
+        Double acumular = 0.0;
+        
+    	Celula i = primeiro.prox;
+		for(int x = 0; x < tamanho; x++, i = i.prox) {
+    		acumular += i.elemento.getAltura();
 		}
+
+       
+	   	
+		int resp = arredonda(acumular/tamanho);
+		MyIO.println(resp);
+    }
+
+	public int arredonda(double number) {
+    	return (number >= 0) ? (int)(number + 0.5) : (int)(number - 0.5);
 	}
+
+    
 }
 
-public class PilhaDinamica {
 
-	static MetodosPilha pilha = new MetodosPilha(); //global para pilha
 
-public static boolean isFim(String frase) {
-	boolean isFim = true;
-	if (frase.length() == 3) {
-			if (frase.charAt(0) == 'F' && frase.charAt(1) == 'I' && frase.charAt(2) == 'M') {
-			isFim = false;
-			}
-		}
-	return isFim;
+public class Fila {
+    
+   static MetodosFila fila = new MetodosFila(); //global para pilha
+
+    public static boolean isFim(String frase) {
+        boolean isFim = true;
+        if (frase.length() == 3) {
+                if (frase.charAt(0) == 'F' && frase.charAt(1) == 'I' && frase.charAt(2) == 'M') {
+                isFim = false;
+                }
+            }
+        return isFim;
 	}
 
 	public static String getArquivos(String s) {
@@ -467,12 +495,13 @@ public static boolean isFim(String frase) {
 					arquivo = getArquivos(pubin[i]);
                     arquivo = personagem[i].lerArquivo(arquivo);
                     setPersonagem(arquivo, personagem[i]);
-                    pilha.inserir(personagem[i]);
+                    fila.inserir(personagem[i]);
 					
 				break;
 				case "R":
-					p = pilha.remover();
-					MyIO.println("(R) " + p.getNome());
+					p = fila.remover();
+                    MyIO.println("(R) " + p.getNome());
+
 			}	
 
 
@@ -524,13 +553,11 @@ public static boolean isFim(String frase) {
               strArquivo = arquivo[i].lerArquivo(convertida);
               personagem[i] = new Personagem();
 			  setPersonagem(strArquivo, personagem[i]);
-			  pilha.inserir(personagem[i]);
+			  fila.inserir(personagem[i]);
 			  
         }
 
         fazerComandos(pubin, quantidadeDeComandos);
-		Celula i = new Celula();
-		pilha.mostrar(pilha.getTopo(), (pilha.getN() - 1));
 
 	}
 }

@@ -8,8 +8,7 @@ import java.util.*;
 */
 
 
-
-class Personagem{
+class Personagem {
 	//Atributos privados	
 	private String nome = "";
 	private int altura = 0;
@@ -31,11 +30,12 @@ class Personagem{
 		this.corDosOlhos = "";
 		this.anoNascimento = "";
 		this.genero = "";
-        this.homeworld= "";
+		this.homeworld= "";
 	}	
 
 	//Construtor que recebe parametros
 	public Personagem(String nome, int altura, double peso, String corDoCabelo, String corDaPele, String corDosOlhos, String anoNascimento, String genero, String homeworld) {
+		
 		setNome(nome);
 		setAltura(altura);
 		setPeso(peso);
@@ -45,6 +45,7 @@ class Personagem{
 		setAnoNascimento(anoNascimento);
 		setGenero(genero);
 		setHomeworld(homeworld);
+
 	}
 
 	//Inicio get's e set's dos atributos
@@ -105,11 +106,11 @@ class Personagem{
 	//fim set's e get's
 
 	//metodo de printar
-	public void print(int i) throws Exception{
+	public void print() throws Exception{
 		DecimalFormat df = new DecimalFormat("#.#", new DecimalFormatSymbols(Locale.US));
 		    
-		String print = ("["+i+"] "+" ## "+this.getNome()+" ## "+df.format(this.getAltura())+" ## "+df.format(this.getPeso())+" ## "+this.getCorDoCabelo()+" ## "+this.getCorDaPele()+
-		" ## "+this.getCorDosOlhos()+" ## "+this.getAnoNascimento()+" ## "+this.getGenero()+ " ## "+this.getHomeworld()+" ## ");
+		String print = (" ## "+this.getNome()+" ## "+df.format(this.getAltura())+" ## "+df.format(this.getPeso())+" ## "+this.getCorDoCabelo()+" ## "+this.getCorDaPele()+
+		" ## "+this.getCorDosOlhos()+" ## "+this.getAnoNascimento()+" ## "+this.getGenero()+ " ## "+this.getHomeworld()+" ##");
 		String convertida = new String(print.getBytes(), "ISO-8859-1");
 		MyIO.println(convertida);
 	}
@@ -334,203 +335,342 @@ class Personagem{
 	
 }
 
-class Celula extends Personagem {
-	public Personagem elemento; // Elemento inserido na celula.
-	public Celula prox; // Aponta a celula prox.
-	
-	public Celula() { 
-        this(new Personagem()); 
-    }
 
-	public Celula(Personagem elemento) {
-      this.elemento = elemento;
-      this.prox = null;
+class CelulaDupla extends Personagem{
+	public Personagem elemento;
+	public CelulaDupla ant;
+	public CelulaDupla prox;
+
+	/**
+	 * Construtor da classe.
+	 */
+	public CelulaDupla() {
+		
+	}
+
+
+	/**
+	 * Construtor da classe.
+	 * @param elemento int inserido na celula.
+	 */
+	public CelulaDupla(Personagem elemento) {
+		this.elemento = elemento;
+		this.ant = this.prox = null;
 	}
 }
 
-class MetodosPilha {
-	private Celula topo;
-	private int n;
+class ListaDupla extends CelulaDupla {
+	protected CelulaDupla primeiro;
+	protected CelulaDupla ultimo;
+	protected int n;
 
-	public MetodosPilha() {
-		topo = null;
+	public ListaDupla() {
+		primeiro = new CelulaDupla();
+		ultimo = primeiro;
+		n = 0;
 	}
-
 	public int getN() {
-		return n;
+		return this.n;
 	}
+	/**
+	 * Insere um elemento na primeira posicao da lista.
+	 * @param x int elemento a ser inserido.
+	 */
+	public void inserirInicio(Personagem x) {
+		CelulaDupla tmp = new CelulaDupla(x);
 
-	public Celula getTopo() {
-		return topo;
-	}
-
-	public void inserir(Personagem x) {
-		Celula tmp = new Celula(x);
-		tmp.prox = topo;
-		topo = tmp;
+		tmp.ant = primeiro;
+		tmp.prox = primeiro.prox;
+		primeiro.prox = tmp;
+		if(primeiro == ultimo){
+			ultimo = tmp;
+		} else {
+			tmp.prox.ant = tmp;
+		}
 		tmp = null;
 		n++;
 	}
 
-	public void extrairdapilha(int i) {
-		Celula aux;
-	
-		if(topo == null || primeiro.prox == null) {
-        	return;
-    	}
-
-		for(Celula j = topo; j != null; j = j.prox) {
-			if(j.elemento == i) {
-				aux = j;
-				j == null;		
-			}
-		}
-
-		if(aux.prox != null) {
-
-			for(Celula k = aux.prox; k != null; k = k.prox, aux.prox = k; aux = aux.prox);
-
-		}
-
-		//Melhor caso: (1) para reorganizar porque o elemento está no final e (n) para achar.
-		//Melhor pior: (n) para reorganizar porque o elemento está no topo e (1) para achar.
-
+	/**
+	 * Insere um elemento na ultima posicao da lista.
+	 * @param x int elemento a ser inserido.
+	 */
+	public void inserirFim(Personagem x) {
+		ultimo.prox = new CelulaDupla(x);
+		ultimo.prox.ant = ultimo;
+		ultimo = ultimo.prox;
+		n++;
 	}
 
-	public Personagem remover() throws Exception {
-		if (topo == null) {
-			throw new Exception("Erro ao remover!");
+	/**
+	 * Remove um elemento da primeira posicao da lista.
+	 * @return resp int elemento a ser removido.
+	 * @throws Exception Se a lista nao contiver elementos.
+	 */
+	public Personagem removerInicio() throws Exception {
+		if (primeiro == ultimo) {
+			throw new Exception("Erro ao remover (vazia)!");
 		}
 
-		Personagem resp = topo.elemento.clone();
-		Celula tmp = topo;
-		topo = topo.prox;
-		tmp.prox = null;
+		CelulaDupla tmp = primeiro;
+		primeiro = primeiro.prox;
+		Personagem resp = primeiro.elemento;
+		tmp.prox = primeiro.ant = null;
 		tmp = null;
 		n--;
 		return resp;
 	}
+
+	/**
+	 * Remove um elemento da ultima posicao da lista.
+	 * @return resp int elemento a ser removido.
+	 * @throws Exception Se a lista nao contiver elementos.
+	 */
+	public Personagem removerFim() throws Exception {
+		if (primeiro == ultimo) {
+			throw new Exception("Erro ao remover (vazia)!");
+		} 
+		Personagem resp = ultimo.elemento;
+		ultimo = ultimo.ant;
+		ultimo.prox.ant = null;
+		ultimo.prox = null;
+		n--;
+		return resp;
+	}
+
+	/**
+	 * Insere um elemento em uma posicao especifica considerando que o 
+	 * primeiro elemento valido esta na posicao 0.
+	 * @param x int elemento a ser inserido.
+	 * @param pos int posicao da insercao.
+	 * @throws Exception Se <code>posicao</code> invalida.
+	 */
+	public void inserir(Personagem x, int pos) throws Exception {
+
+		int tamanho = n;
+
+		if(pos < 0 || pos > tamanho){
+			throw new Exception("Erro ao inserir posicao (" + pos + " / tamanho = " + tamanho + ") invalida!");
+		} else if (pos == 0){
+			inserirInicio(x);
+		} else if (pos == tamanho){
+			inserirFim(x);
+		} else {
+			// Caminhar ate a posicao ant a insercao
+			CelulaDupla i = primeiro;
+			for(int j = 0; j < pos; j++, i = i.prox);
+
+			CelulaDupla tmp = new CelulaDupla(x);
+			tmp.ant = i;
+			tmp.prox = i.prox;
+			tmp.ant.prox = tmp.prox.ant = tmp;
+			tmp = i = null;
+			n++;
+		}
+	}
+
+	/**
+	 * Remove um elemento de uma posicao especifica da lista
+	 * considerando que o primeiro elemento valido esta na posicao 0.
+	 * @param posicao Meio da remocao.
+	 * @return resp int elemento a ser removido.
+	 * @throws Exception Se <code>posicao</code> invalida.
+	 */
+	public Personagem remover(int pos) throws Exception {
+		Personagem resp;
+		int tamanho = n;
+
+		if (primeiro == ultimo){
+			throw new Exception("Erro ao remover (vazia)!");
+
+		} else if(pos < 0 || pos >= tamanho){
+			throw new Exception("Erro ao remover (posicao " + pos + " / " + tamanho + " invalida!");
+		} else if (pos == 0){
+			resp = removerInicio();
+		} else if (pos == tamanho - 1){
+			resp = removerFim();
+		} else {
+			// Caminhar ate a posicao anterior a insercao
+			CelulaDupla i = primeiro.prox;
+			for(int j = 0; j < pos; j++, i = i.prox);
+
+			i.ant.prox = i.prox;
+			i.prox.ant = i.ant;
+			resp = i.elemento;
+			i.prox = i.ant = null;
+			i = null;
+			n--;
+		}
+
+		return resp;
+	}
+
 	
-    public void mostrar(Celula i, int cont) throws Exception {
-		if(i != null) {
-			mostrar(i.prox, cont - 1);
+    public void mostrar(CelulaDupla i, int cont) throws Exception {
+
+		for(i = primeiro.prox; i != null; i = i.prox, cont++) {
 			DecimalFormat df = new DecimalFormat("#.#", new DecimalFormatSymbols(Locale.US));
 		    
-			String print = ("["+cont+"] "+" ## "+i.elemento.getNome()+" ## "+df.format(i.elemento.getAltura())+" ## "+df.format(i.elemento.getPeso())+" ## "+i.elemento.getCorDoCabelo()+" ## "+i.elemento.getCorDaPele()+
+			String print = (" ## "+i.elemento.getNome()+" ## "+df.format(i.elemento.getAltura())+" ## "+df.format(i.elemento.getPeso())+" ## "+i.elemento.getCorDoCabelo()+" ## "+i.elemento.getCorDaPele()+
 			" ## "+i.elemento.getCorDosOlhos()+" ## "+i.elemento.getAnoNascimento()+" ## "+i.elemento.getGenero()+ " ## "+i.elemento.getHomeworld()+" ## ");
 			String convertida = new String(print.getBytes(), "ISO-8859-1");
 			MyIO.println(convertida);
-			
 		}
+
+		
 	}
 }
 
-public class PilhaDinamica {
+class Quick extends ListaDupla {
+	private int quantidadeDeMovimentacoes = 0;
 
-	static MetodosPilha pilha = new MetodosPilha(); //global para pilha
 
-public static boolean isFim(String frase) {
-	boolean isFim = true;
-	if (frase.length() == 3) {
-			if (frase.charAt(0) == 'F' && frase.charAt(1) == 'I' && frase.charAt(2) == 'M') {
-			isFim = false;
+	public Quick() {
+		super();
+	}
+
+	public int getQuantidadeDeMovimentacoes() {
+		return this.quantidadeDeMovimentacoes;
+	}
+
+	public int tamanho() {
+		int tam = 0;
+		for(CelulaDupla i = primeiro; i != null; i = i.prox, tam++);
+		return tam;
+	}
+
+	public int getPosicao(CelulaDupla celula) throws Exception{
+		int pos = 0;
+        for (CelulaDupla i = primeiro.prox; i != null && i != celula; i = i.prox, pos++);
+
+        return pos;
+	}
+
+	void swap(CelulaDupla i, CelulaDupla j){
+		Personagem tmp = j.elemento.clone();
+		j.elemento = i.elemento.clone();
+		i.elemento = tmp.clone();
+		
+	}
+
+	public CelulaDupla getPivo(int inicio, int fim){
+		CelulaDupla pivo = primeiro.prox;
+		int pos = ((inicio + fim)/2);
+		for (int i = 0; pivo != null && i < pos; pivo = pivo.prox, i++);
+
+		return pivo;
+	}
+
+	public void quicksort() throws Exception{
+        quicksort(primeiro.prox, ultimo);
+    }
+
+	public void quicksort(CelulaDupla esq, CelulaDupla dir) throws Exception{
+        CelulaDupla i = esq;
+        CelulaDupla j = dir;  
+        
+        int Inicio = getPosicao(i);
+        int Fim = getPosicao(j);
+
+        CelulaDupla pivo = getPivo(Inicio, Fim);
+        
+        int posi = Inicio;
+        int posj = Fim;
+
+        
+		while (pivo.ant != j && pivo.prox != i) {
+			while ((i != ultimo && i.elemento.getCorDoCabelo().compareTo(pivo.elemento.getCorDoCabelo()) < 0) || (i != ultimo && i.elemento.getCorDoCabelo().compareTo(pivo.elemento.getCorDoCabelo()) == 0 && i.elemento.getNome().compareTo(pivo.elemento.getNome()) < 0)){
+				if(i.prox != null){
+                    i = i.prox;
+                    posi++;
+                }
 			}
-		}
-	return isFim;
+			while ((j.ant != primeiro && j.elemento.getCorDoCabelo().compareTo(pivo.elemento.getCorDoCabelo()) > 0) || (j.ant != primeiro && j.elemento.getCorDoCabelo().compareTo(pivo.elemento.getCorDoCabelo()) == 0 && j.elemento.getNome().compareTo(pivo.elemento.getNome()) > 0)){
+				if(j.ant != null){
+                    j = j.ant;
+                    posj--;
+                }
+			}
+
+			if (posi <= posj){
+				swap(i, j);
+				i = i.prox; posi++;
+                j = j.ant; posj--;
+			}
+        }
+        
+		if (Inicio < posj){
+            quicksort(esq, j);
+        }
+            
+		if (posi < Fim){
+            quicksort(i, dir);
+        }
+            
+	}
+}
+
+	
+
+
+
+public class QuickS {
+    static Quick lista = new Quick();
+
+	public static boolean isFim(String frase) {
+		boolean isFim = true;
+		if (frase.length() == 3) {
+				if (frase.charAt(0) == 'F' && frase.charAt(1) == 'I' && frase.charAt(2) == 'M') {
+				isFim = false;
+				}
+			}
+		return isFim;
 	}
 
-	public static String getArquivos(String s) {
-		String[] arquivo = s.split(" ");
-		return arquivo[1];
-	}
-
-	public static String getComandos(String s) {
-            String[] comandos = s.split(" ");
-            return comandos[0];
-      }
-
-	public static void fazerComandos(String[] pubin, int valor) throws Exception {
-		String comando = new String();
-		String arquivo = new String();
-		Personagem[] personagem = new Personagem[valor];
-		int posicao = 0;
-		Personagem p = new Personagem();
-
-		for(int i = 0; i < valor; i++) {
-			comando = getComandos(pubin[i]);
-			personagem[i] = new Personagem();
-
-
-			switch (comando) {
-				case "I": 
-					pubin[i] = new String(pubin[i].getBytes("ISO-8859-1"), "UTF-8");
-					arquivo = getArquivos(pubin[i]);
-                    arquivo = personagem[i].lerArquivo(arquivo);
-                    setPersonagem(arquivo, personagem[i]);
-                    pilha.inserir(personagem[i]);
-					
-				break;
-				case "R":
-					p = pilha.remover();
-					MyIO.println("(R) " + p.getNome());
-			}	
-
-
-		}
-
-	}
-
-	public static Personagem setPersonagem(String strArquivo, Personagem personagem) throws Exception{
+	public static void setPersonagem(String strArquivo, Personagem personagem) throws Exception{
             personagem.acharNome(strArquivo);
             personagem.altura(strArquivo);
-            personagem.setPeso(0);
+            personagem.peso(strArquivo);
             personagem.corDoCabelo(strArquivo);
             personagem.corDaPele(strArquivo);
             personagem.corDosOlhos(strArquivo);
             personagem.nascimento(strArquivo);
             personagem.genero(strArquivo);
             personagem.homeworld(strArquivo);
-            return personagem;
-    }
-	public static void main(String args[]) throws Exception {
+     }
 
-		MyIO.setCharset("ISO-8859-1");
-		String[] entrada = new String[1000]; //receber pubin
-		int quantidadeEntrada = 0; //contador da quantidade de entrada
-		String strArquivo = ""; //ler nome do arquivo
-        String[] pubin = new String[1000];
 
-            //inicio leitura de dados
+	public static void main(String args[]) throws Exception{
+
+		String[] entrada = new String[1000];
+		String strArquivo = new String();		
+		int quantidadeEntrada = 0;
+
+
 		do {
 
 			entrada[quantidadeEntrada] = MyIO.readLine();
 
 		} while (isFim(entrada[quantidadeEntrada++]) == true);
+		quantidadeEntrada--;
 
-        int quantidadeDeComandos = MyIO.readInt();  //ler valor inteiro após "FIM"      
-
-		quantidadeEntrada--; //retirar o fim do array das entradas
-
-        for (int i = 0; i < quantidadeDeComandos; i++) {
-              pubin[i] = MyIO.readLine(); //ler dados após o número inteiro do pubin
-        }
-
-		//fim leitura de dados
         Personagem[] arquivo = new Personagem[quantidadeEntrada];
-        Personagem[] personagem = new Personagem[quantidadeEntrada];
-        for(int i = 0; i < quantidadeEntrada; i++) {
-              arquivo[i] = new Personagem();
-			  String convertida = new String(entrada[i].getBytes("ISO-8859-1"), "UTF-8");
-              strArquivo = arquivo[i].lerArquivo(convertida);
-              personagem[i] = new Personagem();
-			  setPersonagem(strArquivo, personagem[i]);
-			  pilha.inserir(personagem[i]);
-			  
-        }
+		Personagem[] personagem = new Personagem[quantidadeEntrada];
 
-        fazerComandos(pubin, quantidadeDeComandos);
-		Celula i = new Celula();
-		pilha.mostrar(pilha.getTopo(), (pilha.getN() - 1));
+
+		for(int i = 0; i < quantidadeEntrada; i++) {
+			arquivo[i] = new Personagem();
+			String convertida = new String(entrada[i].getBytes("ISO-8859-1"), "UTF-8");
+	        strArquivo = arquivo[i].lerArquivo(convertida);
+	        personagem[i] = new Personagem();
+			setPersonagem(strArquivo, personagem[i]);
+			lista.inserirFim(personagem[i]);
+		}
+
+		lista.quicksort();
+		CelulaDupla i = new CelulaDupla();
+		int j = 0;
+		lista.mostrar(i, j);
 
 	}
 }

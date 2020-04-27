@@ -8,8 +8,7 @@
 #include <string.h>
 #include <stdbool.h>
 
-
-#define TAM 6
+#define TAM 1000
 
 #define SZ 1000
 
@@ -27,14 +26,8 @@ typedef struct Personagem {
    char *homeworld;
 
 } Personagem;
-//TIPO CELULA ===================================================================
-typedef struct Celula {
-	Personagem elemento;        // Elemento inserido na celula.
-	struct Celula* prox; // Aponta a celula prox.
-} Celula;
 
-
-//PROTITIPOS
+void setPersonagem(Personagem personagem, char *arquivo);
 char *acharNome(char *s);
 int altura(char *s);
 double massa(char *s);
@@ -44,68 +37,139 @@ char *nascimento(char *s);
 char *corDosOlhos(char *s);
 char *genero(char *s);
 char *homeworld(char *s);
-int calcularMedia();
-//Fim prototipos
+void limparEspacoDaCadeia(char *s);
 
+///TIPO CELULA ===================================================================
+typedef struct CelulaDupla {
+      Personagem elemento;        // Elemento inserido na celula.
+      struct CelulaDupla* prox; // Aponta a celula prox.
+      struct CelulaDupla* ant;  // Aponta a celula ant.
+} CelulaDupla;
 
-//variaveis globais
-Celula* primeiro;
-Celula* ultimo;
-int media = 0;
-
-//fim variaveis globais
-
-
-Celula* novaCelula(Personagem elemento) {
-   Celula* nova = (Celula*) malloc(sizeof(Celula));
+CelulaDupla* novaCelulaDupla(Personagem elemento) {
+   CelulaDupla* nova = (CelulaDupla*) malloc(sizeof(CelulaDupla));
    nova->elemento = elemento;
+   nova->ant = NULL;
    nova->prox = NULL;
    return nova;
 }
 
+//LISTA PROPRIAMENTE DITA =======================================================
+CelulaDupla* primeiro;
+CelulaDupla* ultimo;
+
+
+/**
+ * Cria uma lista dupla sem elementos (somente no cabeca).
+ */
 void start () {
    Personagem x;
-   primeiro = novaCelula(x);
+   primeiro = novaCelulaDupla(x);
    ultimo = primeiro;
 }
 
+void inserirFim(Personagem x) {
+   
+   ultimo->prox = novaCelulaDupla(x);
 
-
-Personagem remover() {
-   if (primeiro == ultimo) {
-      printf("\nErro ao remover");
-      exit(1);
-   }
-   Celula* tmp = primeiro;
-   primeiro = primeiro->prox;
-   Personagem resp = primeiro->elemento;
-   tmp->prox = NULL;
-   free(tmp);
-   tmp = NULL;
-   media--;
-   return resp;
+   ultimo->prox->ant = ultimo;
+   ultimo = ultimo->prox;
 }
 
-void inserir(Personagem x) {
+void swap(CelulaDupla *i, CelulaDupla *j){
+    Personagem tmp = i->elemento;
+    i->elemento = j->elemento;
+    j->elemento = tmp;
+    
+}
 
-      ultimo->prox = novaCelula(x);
-      ultimo = ultimo->prox;
-      media++;
+int getPosticao(CelulaDupla *pos){
+    int posicao = 0;
+    for(CelulaDupla *i = primeiro->prox; i != NULL && i != pos; i = i->prox, posicao++);
 
-      printf("%d\n", calcularMedia());
+    return posicao;
+}
+
+CelulaDupla *getPivo(int inicio, int fim){
+    CelulaDupla *pivo = primeiro->prox;
+    int pos = (inicio + fim)/2;
+
+    for(int i = 0; pivo != NULL && i < pos; pivo = pivo->prox, i++);
+    return pivo;
 }
 
 
+void quicksort(CelulaDupla *esq, CelulaDupla *dir){
+    CelulaDupla *i = esq;
+    CelulaDupla *j = dir;
+
+    int inicio = getPosticao(esq);
+    int fim = getPosticao(dir);
+
+    CelulaDupla *pivo = getPivo(inicio, fim);
+
+    int posi = inicio;
+    int posj = fim;
+
+    while(pivo->ant != j && pivo->prox != i){
+        while(i != ultimo && (strcmp(i->elemento.corDoCabelo, (*pivo).elemento.corDoCabelo) < 0) || i != ultimo && (strcmp(i->elemento.corDoCabelo, (*pivo).elemento.corDoCabelo) == 0 && strcmp(i->elemento.nome, (*pivo).elemento.nome) < 0)){
+            if(i->prox != NULL){
+                i = i->prox;
+                posi++;
+            }
+        }
+
+        while(j->ant != primeiro && (strcmp(j->elemento.corDoCabelo, (*pivo).elemento.corDoCabelo) > 0) || j->ant != primeiro && (strcmp(j->elemento.corDoCabelo, (*pivo).elemento.corDoCabelo) == 0 && strcmp(j->elemento.nome, (*pivo).elemento.nome) > 0)){
+            if(j->ant != NULL){
+                j = j->ant;
+                posj--;
+            }
+        }
+
+        if(posi <= posj){
+            swap(i,j);
+            i = i->prox;
+            j = j->ant;
+
+            posi++;
+            posj--;
+        }
+    }
+
+    if(inicio < posj){
+        quicksort(esq, j);
+    }
+
+    if(posi < fim){
+        quicksort(i, dir);
+    }
+
+}
+
+int tamanho() {
+   int tamanho = 0; 
+   CelulaDupla* i;
+   for(i = primeiro; i != ultimo; i = i->prox, tamanho++);
+   return tamanho;
+}
+
+void printPersonagem(CelulaDupla *personagem) {
+      printf(" ## %s ## %d ## %g ## %s ## %s ## %s ## %s ## %s ## %s ## \n", personagem->elemento.nome, personagem->elemento.altura, personagem->elemento.peso, personagem->elemento.corDoCabelo, personagem->elemento.corDaPele, personagem->elemento.corDosOlhos, personagem->elemento.anoNascimento, personagem->elemento.genero, personagem->elemento.homeworld);
+}
 void mostrar() {
-   Celula* i;
-   printf("[ ");
+   CelulaDupla* i;
+   
    for (i = primeiro->prox; i != NULL; i = i->prox) {
-      printf("%s ", i->elemento.nome);
+            printPersonagem(i);
    }
-   printf("] \n");
+   
 }
 
 
+
+
+
+///FIM LISTA ============================================================================================
 char *lerArquivo(char *nome) {
       FILE *arq;
       char *arquivo = (char*) malloc(SZ * sizeof(char));
@@ -292,79 +356,11 @@ char *homeworld(char *s) {
       return homeworld;
 }
 
-void printPersonagem(Personagem personagem) {
-      printf("## %s ## %d ## %g ## %s ## %s ## %s ## %s ## %s ## %s ## \n", personagem.nome, personagem.altura, personagem.peso, personagem.corDoCabelo, personagem.corDaPele, personagem.corDosOlhos, personagem.anoNascimento, personagem.genero, personagem.homeworld);
-}
 
-//--=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=
-
-char getComando(char *pubin) {
-      return pubin[0];
-}
-
-char *getArquivo(char *pubin) {
-      int posicao = 0;
-      char *arquivo = (char*) malloc (sizeof(char) * 1000);
-      for(int i = 2; i < strlen(pubin); i++) {
-            arquivo[posicao] = pubin[i];
-            posicao++;
-      }
-
-      return arquivo;
-}
-
-int arredonda(double number) {
-    return (number >= 0) ? (int)(number + 0.5) : (int)(number - 0.5);
-}
-
-int calcularMedia() {
-
-      double soma = 0;
-      int arredondado = 0;
-
-      for(Celula *i = primeiro; i != ultimo; i = i->prox) {
-            soma += primeiro->elemento.altura;
-      }
-
-      arredondado = arredonda(soma/media);
-
-      
-      return arredondado;
-}
-
-void comandoI(char *pubin, Personagem personagem) {
-      char *arquivo = getArquivo(pubin);
-      arquivo = getArquivo(pubin);
-      arquivo = lerArquivo(arquivo);
-      personagem.nome = acharNome(arquivo);
-      personagem.altura = altura(arquivo);
-      personagem.peso = 0;
-      personagem.corDoCabelo = corDoCabelo(arquivo);
-      personagem.corDaPele = corDaPele(arquivo);
-      personagem.anoNascimento = nascimento(arquivo);
-      personagem.corDosOlhos = corDosOlhos(arquivo);
-      personagem.genero = genero(arquivo);
-      personagem.homeworld = homeworld(arquivo);
-      inserir(personagem);
-}
-
-
-void comandoR() {
-      Personagem r = remover();
-      printf("(R) %s\n", r.nome);
-
-}
-
-void fazerComando(char *pubin, Personagem personagem) {
-      char comando = getComando(pubin);
-      if(comando == 'I')
-            comandoI(pubin, personagem);
-      if(comando == 'R')
-            comandoR();
-}
 
 int main() {
       start();
+
       char entrada[SZ][SZ]; //Array de string (matriz de char)
       int quantidadeEntrada = 0;
       char *arquivo; //armazenar nome do arquivo
@@ -377,7 +373,6 @@ int main() {
             scanf(" %[^\n]", entrada[quantidadeEntrada]);
       } while(isFim(entrada[quantidadeEntrada++]) == false);
       quantidadeEntrada--;
-      scanf("%d", &valor); //ler um inteiro após o fim (sempre vai ter)
 
       Personagem personagemEntradaPadrao[TAM]; //Array para armazenar os personagens da entrada padrão      
       //Armazenar personagens do pub in na lista
@@ -386,21 +381,18 @@ int main() {
             arquivo = lerArquivo(entrada[i]); 
             personagemEntradaPadrao[i].nome = acharNome(arquivo);
             personagemEntradaPadrao[i].altura = altura(arquivo);
-            personagemEntradaPadrao[i].peso = 0;
+            personagemEntradaPadrao[i].peso = massa(arquivo);
             personagemEntradaPadrao[i].corDoCabelo = corDoCabelo(arquivo);
             personagemEntradaPadrao[i].corDaPele = corDaPele(arquivo);
             personagemEntradaPadrao[i].anoNascimento = nascimento(arquivo);
             personagemEntradaPadrao[i].corDosOlhos = corDosOlhos(arquivo);
             personagemEntradaPadrao[i].genero = genero(arquivo);
             personagemEntradaPadrao[i].homeworld = homeworld(arquivo);
-            inserir(personagemEntradaPadrao[i]);
+            inserirFim(personagemEntradaPadrao[i]);
 
-      }
-      Personagem personagens[TAM];
-      for(int i = 0; i < valor; i++) {
-            scanf(" %[^\n]", pubin[i]);
-            fazerComando(pubin[i], personagens[i]);
-      }
-     
+      }    
+      quicksort(primeiro->prox, ultimo);
+    
+      mostrar();
+      
 }
-
