@@ -19,7 +19,7 @@
 
 
 <h2>TP 02</h2>
-<p>Os trabalhos do TP 02 todos dependiam de uma STRUCT em C e uma CLASSE em JAVA</p>
+<p>Os trabalhos do TP 02 todos dependiam de uma STRUCT em C e uma CLASSE em JAVA.</p>
 <p>O "TP02" foram trabalhos para aprender e utilizar: classes, em JAVA, e STRUCTS em C e estruturas de dados de ordenação como: </p>
 <ul>
   <li>Bubblesort</li>
@@ -49,7 +49,7 @@
 </ul>
 
 <h2>TP SEMANAL</h2>
-<p>Os trabalhos feitos no TP SEMANAL são alguns programas que tiveram em algumas semanas para treinar lógica e questões de maratona</p>
+<p>Os trabalhos feitos no TP SEMANAL são alguns programas que tiveram em algumas semanas para treinar lógica e questões de maratona.</p>
 
 
 <h1>F.A.Q</h2>
