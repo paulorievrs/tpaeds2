@@ -1,5 +1,5 @@
-### TRABALHOS DE ALGORITMOS E ESTRUTURA DE DADOS 2
-<h1>TRABALHOS FEITOS EM C E JAVA</h2>
+<h1> TRABALHOS DE ALGORITMOS E ESTRUTURA DE DADOS 2 </h1>
+###TRABALHOS FEITOS EM C E JAVA
 
 <h2>TP 01</h2>
 <p>O "TP01" foram trabalhos simplistas de aquecimento para melhorar, relembrar e ensinar habilidades como:
