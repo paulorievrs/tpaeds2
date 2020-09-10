@@ -2,7 +2,20 @@
 <h1>TRABALHOS FEITOS EM C E JAVA</h2>
 
 <h2>TP 01</h2>
-<p>O "TP01" foram trabalhos simplistas de aquecimento para melhorar e relembrar habilidades como RECURSIVIDADE, STRINGS, tipagem de dados, arrays, fuções e outras bibliotecas JAVA, como a de ler um documento HTML por completo.</p>
+<p>O "TP01" foram trabalhos simplistas de aquecimento para melhorar, relembrar e ensinar habilidades como:
+
+<ul>
+  <li>Recursividade</li>
+  <li>Strings</li>
+  <li>Tipagem de dados</li>
+  <li>Arrays</li>
+  <li>Funções (modularizar o código) </li>
+  <li>Outras bibliotecas JAVA</li>
+  <li>Utilizar o MYIO</li>
+  <li>Definir CHARSET</li>
+ </ul>
+
+
 
 <h2>TP 02</h2>
 <p>Os trabalhos do TP 02 todos dependiam de uma STRUCT em C e uma CLASSE em JAVA</p>
@@ -41,4 +54,7 @@
 <h1>F.A.Q</h2>
 <p style="font-weight: bold">1) O que é o MyIO.class?</p>
 <p>O MyIO é uma classe criada pelo professor Max Do Val Machado para utilização de leitura e outras funções em JAVA para padronizar o padrão dos trabalhos</p>
+
+<p style="font-weight: bold">2) Porque tem alguns arquivos em C++?</p>
+<p>A PUC MINAS utiliza um sistema chamado VERDE que corrige automaticamente as questões, porém, ele faz a leitura de somente arquivos .java e arquivos .cpp</p>
 
