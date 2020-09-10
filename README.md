@@ -53,9 +53,9 @@
 
 
 <h1>F.A.Q</h2>
-<p style="font-weight: bold">1) O que é o MyIO.class?</p>
+#### 1) O que é o MyIO.class?
 <p>O MyIO é uma classe criada pelo professor Max Do Val Machado para utilização de leitura e outras funções em JAVA para padronizar o padrão dos trabalhos</p>
 
-<p style="font-weight: bold">2) Porque tem alguns arquivos em C++?</p>
+#### 2) Porque tem alguns arquivos em C++?
 <p>A PUC MINAS utiliza um sistema chamado VERDE que corrige automaticamente as questões, porém, ele faz a leitura de somente arquivos .java e arquivos .cpp</p>
 
